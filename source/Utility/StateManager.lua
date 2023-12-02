@@ -37,3 +37,23 @@ function StateManager:setCurrentState(state)
 	self.currState = state
 	self.currState:enter(prevState)
 end
+
+--[[
+	Allow a state to capture all updates without notifying
+	the current state.  The current state is returned and
+	should be preserved to regain control via release()
+]]
+function StateManager:capture(state)
+    local currState = self.currState
+	self.currState = state
+	return currState
+end
+
+--[[
+	Allow a state that has captured updates to return control
+	to another state, presumably the state that was in control
+	at the time of capture.
+]]
+function StateManager:release(state)
+    self.currState = state
+end
