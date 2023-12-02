@@ -69,7 +69,9 @@ end
 ]]
 function PopupMenu:popupMenu(stateMgr, x, y, visableRows, optionTab, callBack, drawBorder, font)
     if optionTab == nil or #optionTab == 0 then
-        callBack(nil)
+        if callBack then
+            callBack(nil, true)
+        end
         return
     end
 
