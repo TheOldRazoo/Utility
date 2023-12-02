@@ -30,7 +30,7 @@ function playdate.update()
     playdate.timer.updateTimers()
 end
 
-function myCallback(value, selected)
+function myCallback(userData, value, selected)
     if value == nil then
         value = 'Nil'
     end

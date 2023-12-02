@@ -24,7 +24,9 @@ local currState
 
 function StateManager:init(startState)
 	self.currState = startState
-	self.currState:enter(nil)
+	if startState then
+		self.currState:enter(nil)
+	end
 end
 
 function StateManager:getCurrentState()			-- returns State
@@ -33,7 +35,9 @@ end
 
 function StateManager:setCurrentState(state)
 	local prevState = self.currState
-	self.currState:exit()
+	if prevState then
+		prevState:exit()
+	end
 	self.currState = state
 	self.currState:enter(prevState)
 end

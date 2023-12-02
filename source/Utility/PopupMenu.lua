@@ -12,6 +12,7 @@ local fontExtra <const> = 4
 
 function PopupMenu:init()
     PopupMenu.super.init()
+    self.allowButtonB = true
 end
 
 local function getMaxTextLength(optionTab, font)
@@ -41,6 +42,10 @@ local function clearScreen(x, y, width, height, drawBorder)
     end
 end
 
+function PopupMenu:setOptionButtonB(allow)
+    self.allowButtonB = allow
+end
+
 --[[
     Pops up a selection menu consisting of the string in
     the option table passed.  The upper left corner of the
@@ -55,22 +60,23 @@ end
     When the menu is dismissed the callBack function will be
     called with the result.  The callback should be of the form:
 
-        function myCallBack(result, selected)
+        function myCallBack(userData, result, selected)
 
     The passed in 'result' will be one of the strings in the optionTab
     indicating that it was selected or 'nil' indicating that the menu
     was dismissed.  'selected' will be true if the user has selected
     that option (A or B button) and false if the cursor has just been
-    positioned on that option.
+    positioned on that option.  The 'userData' value will be what was
+    passed in during invocation of the menu.
 
     The callback function will be called before update control is returned
     the the calling state so the results will be available on it's next
     update() call.
 ]]
-function PopupMenu:popupMenu(stateMgr, x, y, visableRows, optionTab, callBack, drawBorder, font)
+function PopupMenu:popupMenu(stateMgr, x, y, visableRows, optionTab, callBack, userData, drawBorder, font)
     if optionTab == nil or #optionTab == 0 then
         if callBack then
-            callBack(nil, true)
+            callBack(userData, nil, true)
         end
         return
     end
@@ -81,6 +87,7 @@ function PopupMenu:popupMenu(stateMgr, x, y, visableRows, optionTab, callBack, d
 
     visableRows = math.min(visableRows, #optionTab)
     self.optionTab = optionTab
+    self.userData = userData
     self.font = font
     self.callBack = callBack
     self.maxWidth = getMaxTextLength(optionTab, self.font) + fontExtra
@@ -109,7 +116,7 @@ function PopupMenu:popupMenu(stateMgr, x, y, visableRows, optionTab, callBack, d
     self.screen = gfx.getDisplayImage()
     clearScreen(self.x, self.y, self.maxWidth, self.visableRows, drawBorder)
     if self.callBack then
-        self.callBack(self.optionTab[1], false)
+        self.callBack(self.userData, self.optionTab[1], false)
     end
 end
 
@@ -118,19 +125,19 @@ function PopupMenu:update()
         self.gridView:selectNextRow(true)
         if self.callBack then
             local section, row, col = self.gridView:getSelection()
-            self.callBack(self.optionTab[row], false)
+            self.callBack(self.userData, self.optionTab[row], false)
         end
     elseif pd.buttonJustPressed(pd.kButtonUp) then
         self.gridView:selectPreviousRow(true)
         if self.callBack then
             local section, row, col = self.gridView:getSelection()
-            self.callBack(self.optionTab[row], false)
+            self.callBack(self.userData, self.optionTab[row], false)
         end
     elseif pd.buttonJustPressed(pd.kButtonA) then
         local section, row, col = self.gridView:getSelection()
         self:cleanup(self.optionTab[row])
         return
-    elseif pd.buttonJustPressed(pd.kButtonB) then
+    elseif self.allowButtonB and pd.buttonJustPressed(pd.kButtonB) then
         self:cleanup(nil)
         return
     end
@@ -142,7 +149,7 @@ end
 
 function PopupMenu:cleanup(retValue)
     if self.callBack then
-        self.callBack(retValue, true)
+        self.callBack(self.userData, retValue, true)
     end
     if self.releaseState then
         self.stateMgr:release(self.prevSate)
