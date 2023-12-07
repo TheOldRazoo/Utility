@@ -209,6 +209,22 @@ function gridview:setUserDrawCellCallback(callback)
     self.userDrawCellCallback = callback
 end
 
+function gridview:getUserDrawHorizontalDivider()
+	return self.drawHorizontalDivider
+end
+
+function gridview:setUserDrawHorizontalDivider(drawHorizontalDivider)
+    self.drawHorizontalDivider = drawHorizontalDivider
+end
+
+function fridview:getUserDrawSectionHeader()
+    return self.drawSectionHeader
+end
+
+function gridview:setUserDrawSectionHeader(drawSectionHeader)
+    self.drawSectionHeader = drawSectionHeader
+end
+
 -- override to draw the contents of the cells
 function gridview:drawCell(section, row, column, selected, x, y, width, height)
 	gfx.setColor(gfx.kColorBlack)
@@ -478,7 +494,11 @@ function gridview:drawInRect(x, y, width, height)
 
 			if self.sectionHeaderHeight > 0 and drawY + self.sectionHeaderHeight > 0 and drawY < height then
 				-- draw the section header, inset by left and right paddings, and by the x passed in by the caller
-				self:drawSectionHeader(section, floor(x + drawX + self.sectionHeaderPaddingLeft + self.scrollPositionX), floor(y + drawY), headerWidth - self.sectionHeaderPaddingLeft - self.sectionHeaderPaddingRight, self.sectionHeaderHeight)
+				if self.drawSectionHeader then
+					self.drawSectionHeader(self, section, floor(x + drawX + self.sectionHeaderPaddingLeft + self.scrollPositionX), floor(y + drawY), headerWidth - self.sectionHeaderPaddingLeft - self.sectionHeaderPaddingRight, self.sectionHeaderHeight)
+				else
+					self:drawSectionHeader(section, floor(x + drawX + self.sectionHeaderPaddingLeft + self.scrollPositionX), floor(y + drawY), headerWidth - self.sectionHeaderPaddingLeft - self.sectionHeaderPaddingRight, self.sectionHeaderHeight)
+				end
 			end
 
 			drawY = drawY + self.sectionHeaderHeight + self.sectionHeaderPaddingBottom -- add section header height and bottom padding
@@ -490,7 +510,11 @@ function gridview:drawInRect(x, y, width, height)
 				drawY += self.cellPaddingTop	-- add top cell padding
 
 				if self.horizontalDividers[section] ~= nil and self.horizontalDividers[section][row] == true and self.horizontalDividerHeight > 0 then
-					self:drawHorizontalDivider(floor(x + drawX), floor(y + drawY), self.contentWidth - (self.contentInsetRight + self.contentInsetLeft), self.horizontalDividerHeight)
+					if self.drawHorizontalDivider then
+						self.drawHorizontalDivider(grid, floor(x + drawX), floor(y + drawY), self.contentWidth - (self.contentInsetRight + self.contentInsetLeft), self.horizontalDividerHeight)
+					else
+						self:drawHorizontalDivider(floor(x + drawX), floor(y + drawY), self.contentWidth - (self.contentInsetRight + self.contentInsetLeft), self.horizontalDividerHeight)
+					end
 					drawY += self.horizontalDividerHeight
 				end
 
