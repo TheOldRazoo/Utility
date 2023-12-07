@@ -42,6 +42,30 @@ local function clearScreen(x, y, width, height, drawBorder)
     end
 end
 
+local function myDrawCell(grid, section, row, col, selected, x, y, width, height)
+    local c, b
+    local color = gfx.getColor()
+    local backgroundColor = gfx.getBackgroundColor()
+    if selected then
+        gfx.setImageDrawMode(gfx.kDrawModeInverted)
+        b = color
+        c = backgroundColor
+    else
+        gfx.setImageDrawMode(gfx.kDrawModeCopy)
+        b = backgroundColor
+        c = color
+    end
+
+    gfx.setColor(b)
+    gfx.fillRect(x, y, width, height)
+    gfx.setColor(c)
+    gfx.setBackgroundColor(b)
+    local self = grid:getUserData()
+    self.font:drawText(self.optionTab[row], x + 4, y + 2)
+    gfx.setColor(color)
+    gfx.setBackgroundColor(backgroundColor)
+end
+
 function PopupMenu:setOptionButtonB(allow)
     self.allowButtonB = allow
 end
@@ -160,28 +184,4 @@ end
 
 function PopupMenu:exit()
     self.releaseState = false
-end
-
-function myDrawCell(grid, section, row, col, selected, x, y, width, height)
-    local c, b
-    local color = gfx.getColor()
-    local backgroundColor = gfx.getBackgroundColor()
-    if selected then
-        gfx.setImageDrawMode(gfx.kDrawModeInverted)
-        b = color
-        c = backgroundColor
-    else
-        gfx.setImageDrawMode(gfx.kDrawModeCopy)
-        b = backgroundColor
-        c = color
-    end
-
-    gfx.setColor(b)
-    gfx.fillRect(x, y, width, height)
-    gfx.setColor(c)
-    gfx.setBackgroundColor(b)
-    local self = grid:getUserData()
-    self.font:drawText(self.optionTab[row], x + 4, y + 2)
-    gfx.setColor(color)
-    gfx.setBackgroundColor(backgroundColor)
 end
