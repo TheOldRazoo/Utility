@@ -137,7 +137,7 @@ function PopupMenu:popupMenu(stateMgr, x, y, visableRows, optionTab, callBack, u
     self.visableRows = visableRows * (self.font:getHeight() + fontExtra)
     self.prevSate = stateMgr:capture(self)
     self.releaseState = true
-    self.screen = gfx.getDisplayImage()
+    self.screen = gfx.getWorkingImage()
     clearScreen(self.x, self.y, self.maxWidth, self.visableRows, drawBorder)
     if self.callBack then
         self.callBack(self.userData, self.optionTab[1], false)
@@ -145,23 +145,23 @@ function PopupMenu:popupMenu(stateMgr, x, y, visableRows, optionTab, callBack, u
 end
 
 function PopupMenu:update()
-    if pd.buttonJustPressed(pd.kButtonDown) then
+    if pd.buttonJustReleased(pd.kButtonDown) then
         self.gridView:selectNextRow(true)
         if self.callBack then
             local section, row, col = self.gridView:getSelection()
             self.callBack(self.userData, self.optionTab[row], false)
         end
-    elseif pd.buttonJustPressed(pd.kButtonUp) then
+    elseif pd.buttonJustReleased(pd.kButtonUp) then
         self.gridView:selectPreviousRow(true)
         if self.callBack then
             local section, row, col = self.gridView:getSelection()
             self.callBack(self.userData, self.optionTab[row], false)
         end
-    elseif pd.buttonJustPressed(pd.kButtonA) then
+    elseif pd.buttonJustReleased(pd.kButtonA) then
         local section, row, col = self.gridView:getSelection()
         self:cleanup(self.optionTab[row])
         return
-    elseif self.allowButtonB and pd.buttonJustPressed(pd.kButtonB) then
+    elseif self.allowButtonB and pd.buttonJustReleased(pd.kButtonB) then
         self:cleanup(nil)
         return
     end

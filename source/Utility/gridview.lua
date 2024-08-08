@@ -217,7 +217,7 @@ function gridview:setUserDrawHorizontalDivider(drawHorizontalDivider)
     self.drawHorizontalDivider = drawHorizontalDivider
 end
 
-function fridview:getUserDrawSectionHeader()
+function gridview:getUserDrawSectionHeader()
     return self.drawSectionHeader
 end
 
